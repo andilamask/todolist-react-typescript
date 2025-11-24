@@ -2,11 +2,11 @@ import { useState } from "react";
 import "./App.css";
 import Todo from "./Todo";
 
-type TodoItem = {
+interface TodoItem {
   id: number;
   text: string;
   completed: boolean;
-};
+}
 
 export default function App() {
   const [input, setInput] = useState<string>("");
@@ -25,21 +25,21 @@ export default function App() {
   };
 
   const completeTodo = (id: number) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, completed: true } : todo
+    setTodos((prev) =>
+      prev.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
       )
     );
   };
 
   const deleteTodo = (id: number) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
+    setTodos((prev) => prev.filter((todo) => todo.id !== id));
   };
 
   return (
     <>
       <div className="bg-purple-950 p-2 min-h-screen flex justify-center items-center">
-        <div className="max-w[500px] w-[90%] bg-slate-900 p-4 rounded-md shadow-md">
+        <div className="max-w-[500px] w-[90%] bg-slate-900 p-4 rounded-md shadow-md">
           <h1 className="text-center text-white text-2xl">
             To do List Andila 🌸
           </h1>
@@ -49,7 +49,7 @@ export default function App() {
               onChange={(e) => setInput(e.target.value)}
               type="text"
               placeholder="Add To do ..."
-              className="flex-3 border-2 outline-none border-gray-500 text-white placeholder-grey-500 p-2 rounded-md focus:border-white"
+              className="flex-4 border-2 outline-none border-gray-500 text-white placeholder-gray-500 p-2 rounded-md focus:border-white"
             />
             <button
               onClick={addTodo}
