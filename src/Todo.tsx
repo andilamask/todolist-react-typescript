@@ -13,12 +13,10 @@ interface TodoProp {
 }
 
 export default function Todo({ todo, completeTodo, deleteTodo }: TodoProp) {
-  const todoName = todo.text;
+  const { completed, text } = todo;
   return (
     <div className="bg-purple-800 p-2 rounded-md flex justify-between items-center my-4 text-white">
-      <p className={`${todo.completed === true ? "line-through" : ""}`}>
-        {todoName}
-      </p>
+      <p className={`${completed === true ? "line-through" : ""}`}>{text}</p>
       <div className="flex items-center gap-2 cursor-pointer">
         <FaCheckCircle
           className="hover:text-green-200"
