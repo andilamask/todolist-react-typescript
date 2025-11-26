@@ -4,12 +4,7 @@
 import { Avatar, AvatarFallback } from "./components/ui/avatar";
 
 interface TodoProp {
-  todo: {
-    id: number;
-    text: string;
-    completed: boolean;
-  };
-
+  todo: { id: number; text: string; completed: boolean };
   completeTodo: (id: number) => void;
   deleteTodo: (id: number) => void;
 }
@@ -21,14 +16,6 @@ export default function Todo({ todo, completeTodo, deleteTodo }: TodoProp) {
         {todo.text}
       </p>
       <div className="flex items-center gap-2 cursor-pointer">
-        {/* <FaCheckCircle
-          className="hover:text-green-200"
-          onClick={() => completeTodo(todo.id)}
-        />
-        <FaTrash
-          className="hover:text-red-200"
-          onClick={() => deleteTodo(todo.id)}
-        /> */}
         <Avatar onClick={() => completeTodo(todo.id)}>
           <AvatarFallback className="bg-green-600 text-white hover:bg-green-500 transition">
             <svg
