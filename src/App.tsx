@@ -1,6 +1,8 @@
 import { useState } from "react";
-import "./App.css";
+// import "./App.css";
 import Todo from "./Todo";
+import { Button } from "./components/ui/button";
+import { Input } from "./components/ui/input";
 
 interface TodoItem {
   id: number;
@@ -43,20 +45,21 @@ export default function App() {
           <h1 className="text-center text-white text-2xl">
             To do List Andila 🌸
           </h1>
-          <div className="flex gap-2 justify-center my-8">
-            <input
+          <div className="flex gap-2 justify-center items-center my-8">
+            <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              type="text"
-              placeholder="Add To do ..."
-              className="flex-4 border-2 outline-none border-gray-500 text-white placeholder-gray-500 p-2 rounded-md focus:border-white"
-            />
-            <button
+              placeholder="Add to do ..."
+              className="h-11 text-lg"
+            ></Input>
+            <Button
               onClick={addTodo}
-              className="flex-1 cursor-pointer rounded-md bg-purple-800 text-sm hover:bg-purple-900 text-white"
+              variant="destructive"
+              size={"lg"}
+              className="text-1xl"
             >
-              Add To do
-            </button>
+              Add to do
+            </Button>
           </div>
           <div>
             <h1 className="text-center text-white text-2xl">Todos</h1>
