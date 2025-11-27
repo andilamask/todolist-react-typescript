@@ -10,7 +10,8 @@ export default function App() {
   const { todos, isLoading, addTodo, toggleTodo, deleteTodo } =
     useIndexedTodos();
 
-  const handleAddTodo = () => {
+  const handleAddTodo = (e?: React.FormEvent<HTMLFormElement>) => {
+    e?.preventDefault();
     const Trimmed = input.trim(); // trim() untuk menghilangkan spasi di awal/akhir
     if (!Trimmed) return;
     addTodo(Trimmed);
@@ -27,7 +28,10 @@ export default function App() {
 
           {/* bagian Input dan Button */}
 
-          <div className="flex gap-2 justify-center items-center my-8">
+          <form
+            onSubmit={handleAddTodo}
+            className="flex gap-2 justify-center items-center my-8"
+          >
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -35,14 +39,14 @@ export default function App() {
               className="h-11 text-lg"
             ></Input>
             <Button
-              onClick={handleAddTodo}
+              type="submit" // penambahan enter saat mengisi todo list
               variant="destructive"
               size={"lg"}
               className="text-1xl"
             >
               Add to do
             </Button>
-          </div>
+          </form>
 
           {/* Bagian list todos} */}
 
