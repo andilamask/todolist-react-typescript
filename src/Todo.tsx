@@ -12,7 +12,11 @@ interface TodoProp {
 export default function Todo({ todo, completeTodo, deleteTodo }: TodoProp) {
   return (
     <div className="bg-blue-900/50 p-2 rounded-md flex justify-between items-center my-4 text-white">
-      <p className={`${todo.completed === true ? "line-through" : ""}`}>
+      <p
+        className={`${
+          todo.completed === true ? "line-through" : ""
+        } flex-1 break-all`} // break-all supaya teks panjang bisa ke-wrap
+      >
         {todo.text}
       </p>
       <div className="flex items-center gap-2 cursor-pointer">
