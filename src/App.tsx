@@ -26,6 +26,7 @@ export default function App() {
           </h1>
 
           {/* bagian Input dan Button */}
+
           <div className="flex gap-2 justify-center items-center my-8">
             <Input
               value={input}

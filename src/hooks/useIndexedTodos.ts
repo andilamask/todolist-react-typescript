@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"; //kurangi penggunaan useEffect
 import { get, set } from "idb-keyval";
 
 export interface TodoItem {
@@ -13,51 +13,52 @@ export function useIndexedTodos() {
   const [todos, setTodos] = useState<TodoItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // 1) Waktu pertama kali component mount → baca dari IndexedDB
+  // load todos dari IndexedDB saat mount
+
   useEffect(() => {
-    async function loadTodos() {
-      try {
-        const saved = (await get<TodoItem[]>(TODOS_KEY)) || [];
-        setTodos(saved);
-      } catch (err) {
-        console.error("Gagal load todos dari IndexedDB", err);
-      } finally {
-        setIsLoading(false);
+    const loadTodos = async () => {
+      const stored = await get(TODOS_KEY); // ambil data dari IndexedDB
+      if (stored) {
+        setTodos(stored); // set ke state jika ada data
       }
+      setIsLoading(false); // maksud false biar loadingnya berhenti
+    };
+    loadTodos(); // panggil fungsi loadTodos, tidak pakai return karena bukan cleanup
+  }, []); // [] supaya cuman jalan sekali saat mount
+
+  // Helper: simpan dulu -> baru set state
+
+  const persistAndSetTodos = async (newTodos: TodoItem[]) => {
+    try {
+      await set(TODOS_KEY, newTodos);
+      setTodos(newTodos);
+    } catch (err) {
+      console.error("Gagal simpan todos ke IndexedDB", err);
     }
-
-    loadTodos();
-  }, []);
-
-  // 2) Setiap todos berubah → simpan ke IndexedDB
-  useEffect(() => {
-    if (isLoading) return; // jangan save pas pertama kali sebelum data ke-load
-    async function saveTodos() {
-      try {
-        await set(TODOS_KEY, todos);
-      } catch (err) {
-        console.error("Gagal simpan todos ke IndexedDB", err);
-      }
-    }
-
-    saveTodos();
-  }, [todos, isLoading]);
-
-  // 3) Helper functions untuk operasi todo
-  const addTodo = (text: string) => {
-    setTodos((prev) => [...prev, { id: Date.now(), text, completed: false }]);
   };
 
-  const toggleTodo = (id: number) => {
-    setTodos((prev) =>
-      prev.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
+  // tambah todo
+
+  const addTodo = async (text: string) => {
+    const newTodo = { id: Date.now(), text, completed: false };
+    const newTodos = [...todos, newTodo];
+    await persistAndSetTodos(newTodos);
+  };
+
+  // toggle todo
+
+  const toggleTodo = async (id: number) => {
+    const newTodos = todos.map((todo) =>
+      todo.id === id ? { ...todo, completed: !todo.completed } : todo
     );
+    await persistAndSetTodos(newTodos);
   };
 
-  const deleteTodo = (id: number) => {
-    setTodos((prev) => prev.filter((todo) => todo.id !== id));
+  // Delete todo
+
+  const deleteTodo = async (id: number) => {
+    const newTodos = todos.filter((todo) => todo.id !== id);
+    await persistAndSetTodos(newTodos);
   };
 
   return {
