@@ -1,76 +1,55 @@
-import { useState } from "react";
-// import "./App.css";
-import Todo from "./Todo";
-import { Button } from "./components/ui/button";
-import { Input } from "./components/ui/input";
+import { NavLink, Outlet } from "react-router-dom";
 import { useIndexedTodos } from "./hooks/useIndexedTodos";
 
-export default function App() {
-  const [input, setInput] = useState<string>("");
-  const { todos, isLoading, addTodo, toggleTodo, deleteTodo } =
-    useIndexedTodos();
+export type TodosContextType = ReturnType<typeof useIndexedTodos>;
 
-  const handleAddTodo = (e?: React.FormEvent<HTMLFormElement>) => {
-    e?.preventDefault();
-    const Trimmed = input.trim(); // trim() untuk menghilangkan spasi di awal/akhir
-    if (!Trimmed) return;
-    addTodo(Trimmed);
-    setInput(""); // mengosongkan input
-  };
+export default function App() {
+  const todosState = useIndexedTodos();
+  const { todos } = todosState;
+
+  const incompleteCount = todos.filter((t) => !t.completed).length;
+  const completedCount = todos.filter((t) => t.completed).length;
 
   return (
-    <>
-      <div className="bg-purple-950 p-2 min-h-screen flex justify-center items-center">
-        <div className="max-w-[500px] w-[90%] bg-slate-900 p-4 rounded-md shadow-md">
-          <h1 className="text-center text-white text-2xl">
-            To do List Andila 🌸
-          </h1>
+    <div className="bg-purple-950 min-h-screen flex justify-center items-center">
+      <div className="max-w-[500px] w-[90%] bg-slate-900 p-4 rounded-md shadow-md">
+        <h1 className="text-center text-white text-2xl mb-4">
+          To do List Andila 🌸
+        </h1>
 
-          {/* bagian Input dan Button */}
-
-          <form
-            onSubmit={handleAddTodo}
-            className="flex gap-2 justify-center items-center my-8"
+        {/* Navbar */}
+        <div className="flex justify-center gap-4 mb-4">
+          <NavLink
+            to="/"
+            end
+            className={({ isActive }) =>
+              `px-3 py-1 rounded-full text-sm ${
+                isActive
+                  ? "bg-emerald-500 text-slate-900"
+                  : "bg-slate-800 text-slate-100"
+              }`
+            }
           >
-            <Input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Add to do ..."
-              className="h-11 text-lg"
-            ></Input>
-            <Button
-              type="submit" // penambahan enter saat mengisi todo list
-              variant="destructive"
-              size={"lg"}
-              className="text-1xl"
-            >
-              Add to do
-            </Button>
-          </form>
+            Home ({incompleteCount})
+          </NavLink>
 
-          {/* Bagian list todos} */}
-
-          <div>
-            <h1 className="text-center text-white text-2xl">Todos</h1>
-            {isLoading ? (
-              <p className="text-center text-white mt-4">Loading todos...</p>
-            ) : todos.length > 0 ? (
-              todos.map((todo) => (
-                <Todo
-                  key={todo.id}
-                  todo={todo}
-                  completeTodo={toggleTodo}
-                  deleteTodo={deleteTodo}
-                />
-              ))
-            ) : (
-              <h1 className="mt-4 text-center text-emerald-500/80 text-lg">
-                You have completed all your tasks!
-              </h1>
-            )}
-          </div>
+          <NavLink
+            to="/completed"
+            className={({ isActive }) =>
+              `px-3 py-1 rounded-full text-sm ${
+                isActive
+                  ? "bg-emerald-500 text-slate-900"
+                  : "bg-slate-800 text-slate-100"
+              }`
+            }
+          >
+            Completed ({completedCount})
+          </NavLink>
         </div>
+
+        {/* Outlet: di sini halaman Home / Completed akan dirender */}
+        <Outlet context={todosState} />
       </div>
-    </>
+    </div>
   );
 }
