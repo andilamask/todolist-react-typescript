@@ -1,98 +1,50 @@
-import { useEffect, useState } from "react";
-import { get, set } from "idb-keyval";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  getTodos,
+  addTodosService,
+  toggleTodoService,
+  deleteTodoService,
+  type TodoItem,
+} from "../services/todoService";
 
-export interface TodoItem {
-  id: number;
-  text: string;
-  completed: boolean;
-  createdAt: number; // timestamp saat todo dibuat
-  completedAt: number | null; // timestamp saat todo selesai, null kalau belum
-}
+export type { TodoItem };
 
-const TODOS_KEY = "todos";
+const TODOS_QUERY_KEY = ["todos"];
 
 export function useIndexedTodos() {
-  const [todos, setTodos] = useState<TodoItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
 
-  // load todos dari IndexedDB saat mount
-  useEffect(() => {
-    let active = true;
+  // bagian "read" useQuery
+  const {
+    data: todos = [],
+    isLoading,
+    // isError, error, dll kalau perlu
+  } = useQuery<TodoItem[]>({
+    queryKey: TODOS_QUERY_KEY,
+    queryFn: getTodos,
+  });
 
-    const loadTodos = async () => {
-      try {
-        const stored = (await get(TODOS_KEY)) as TodoItem[] | undefined;
+  const invalidateTodos = () =>
+    queryClient.invalidateQueries({ queryKey: TODOS_QUERY_KEY });
 
-        if (active && stored) {
-          // fallback kalau data lama belum punya createdAt/completedAt
-          const fixed = stored.map((todo) => ({
-            ...todo,
-            createdAt: todo.createdAt ?? Date.now(),
-            completedAt:
-              todo.completedAt ?? (todo.completed ? Date.now() : null),
-          }));
-          setTodos(fixed);
-        }
-      } catch (err) {
-        console.error("Gagal load todos dari IndexedDB", err);
-      } finally {
-        if (active) setIsLoading(false);
-      }
-    };
+  const addTodoMutation = useMutation({
+    mutationFn: (text: string) => addTodosService(text),
+    onSuccess: invalidateTodos,
+  });
 
-    loadTodos();
+  const toggleTodoMutation = useMutation({
+    mutationFn: (id: number) => toggleTodoService(id),
+    onSuccess: invalidateTodos,
+  });
 
-    return () => {
-      active = false;
-    };
-  }, []);
+  const deleteTodoMutation = useMutation({
+    mutationFn: (id: number) => deleteTodoService(id),
+    onSuccess: invalidateTodos,
+  });
 
-  const persistAndSetTodos = async (newTodos: TodoItem[]) => {
-    try {
-      await set(TODOS_KEY, newTodos);
-      setTodos(newTodos);
-    } catch (err) {
-      console.error("Gagal simpan todos ke IndexedDB", err);
-    }
-  };
-
-  // tambah todo
-  const addTodo = async (text: string) => {
-    const now = Date.now();
-    const newTodo: TodoItem = {
-      id: now,
-      text,
-      completed: false,
-      createdAt: now,
-      completedAt: null,
-    };
-
-    const newTodos = [...todos, newTodo];
-    await persistAndSetTodos(newTodos);
-  };
-
-  // toggle todo
-  const toggleTodo = async (id: number) => {
-    const newTodos = todos.map((todo) => {
-      if (todo.id !== id) return todo;
-
-      const newCompleted = !todo.completed;
-
-      return {
-        ...todo,
-        completed: newCompleted,
-        completedAt: newCompleted ? Date.now() : null,
-      };
-    });
-
-    await persistAndSetTodos(newTodos);
-  };
-
-  // Delete todo
-  const deleteTodo = async (id: number) => {
-    const newTodos = todos.filter((todo) => todo.id !== id);
-    await persistAndSetTodos(newTodos);
-  };
+  const addTodo = (text: string) => addTodoMutation.mutateAsync(text);
+  const toggleTodo = (id: number) => toggleTodoMutation.mutateAsync(id);
+  const deleteTodo = (id: number) => deleteTodoMutation.mutateAsync(id);
 
   return {
     todos,
