@@ -15,7 +15,7 @@ export default function App() {
       <div className="max-w-[500px] w-[90%] bg-slate-900 p-4 rounded-md shadow-md">
         <h1 className="text-center text-white text-2xl mb-4">
 
-          To do List Andila test hari kedua v3 test🌸
+          To do List Andila test hari kedua v3 testtt🌸
 
         </h1>
 
