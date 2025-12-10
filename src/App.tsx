@@ -14,7 +14,7 @@ export default function App() {
     <div className="bg-purple-950 min-h-screen flex justify-center items-center">
       <div className="max-w-[500px] w-[90%] bg-slate-900 p-4 rounded-md shadow-md">
         <h1 className="text-center text-white text-2xl mb-4">
-          To do Andila v666 yayaa halo halo 🌸
+          To do Andila v666 yayaa halo halo halolhao  🌸
         </h1>
 
         {/* Navbar */}
