@@ -14,7 +14,7 @@ export default function App() {
     <div className="bg-purple-950 min-h-screen flex justify-center items-center">
       <div className="max-w-[500px] w-[90%] bg-slate-900 p-4 rounded-md shadow-md">
         <h1 className="text-center text-white text-2xl mb-4">
-          To do List Andila BARUUU LAGIIII v7777-11111111111111-2222222222222-33333333-444🌸
+          To do List Andila BARUUU LAGIIII v7777-11111111111111-2222222222222-33333333-444-555🌸
         </h1>
 
         {/* Navbar */}
